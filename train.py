@@ -12,7 +12,12 @@ import matplotlib.pyplot as plt
 
 from test import do_test
 
+
+
 batch_size = 64
+if "BATCH_SIZE" in os.environ:
+    batch_size = int(os.environ["BATCH_SIZE"])
+
 seed = 3407
 
 device = "cpu"
