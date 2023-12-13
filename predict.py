@@ -48,10 +48,8 @@ model.to(device)
 model.eval()
 
 with torch.no_grad():
-    # torch.Tensor
     for paths, tensors in predict_dataloader:
         y = model(tensors.to(device))
         _, predicted = torch.max(y.data, 1)
-        # print(y[0])
         for i, p in enumerate(predicted):
             print(f"{paths[i]} is {train_dataset.label_code_to_text(p)}")
