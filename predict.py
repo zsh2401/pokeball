@@ -45,12 +45,13 @@ checkpoint = torch.load("pokeball.pth")
 model.load_state_dict(checkpoint["model_state_dict"])
 print(f"Loaded model, epochs: {checkpoint['epoch']}, accuracy {checkpoint['accuracy']}")
 model.to(device)
+model.eval()
 
-# torch.Tensor
-for paths, tensors in predict_dataloader:
-    y = model(tensors.to(device))
-
-    _, predicted = torch.max(y.data, 1)
-    # print(y[0])
-    for i, p in enumerate(predicted):
-        print(f"{paths[i]} is {train_dataset.label_code_to_text(p)}")
+with torch.no_grad():
+    # torch.Tensor
+    for paths, tensors in predict_dataloader:
+        y = model(tensors.to(device))
+        _, predicted = torch.max(y.data, 1)
+        # print(y[0])
+        for i, p in enumerate(predicted):
+            print(f"{paths[i]} is {train_dataset.label_code_to_text(p)}")
