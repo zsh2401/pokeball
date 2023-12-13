@@ -16,7 +16,7 @@ def do_test(device, state_dict=None, epochs=0, test_dataset=PokemonTestDataset()
     if state_dict is not None:
         model.load_state_dict(state_dict)
     else:
-        checkpoint = torch.load('./pokeball.pth')
+        checkpoint = torch.load('pokeball.pth')
         print(f"Loaded {checkpoint['epoch']} model from file.")
         model.load_state_dict(checkpoint["model_state_dict"])  # 加载权重
 

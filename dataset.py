@@ -1,3 +1,4 @@
+import json
 import math
 import os
 from io import BytesIO
@@ -65,19 +66,8 @@ class PokemonDataset(Dataset):
         return DataLoader(self, batch_size=batch_size, shuffle=True)
 
     def __init_label_lib__(self, root_dir):
-
-        for label in os.listdir(root_dir):
-            label_path = os.path.join(root_dir, label)
-            if os.path.isdir(label_path):
-                self.labels[label] = True
-
-        label_encoder = LabelEncoder()
-
-        # 将标签列表转换为整数码列表
-        list_labels = list(self.labels)
-        integer_labels = label_encoder.fit_transform(list_labels)
-        for i in range(0, len(list_labels)):
-            self.labels[list_labels[i]] = integer_labels[i]
+        with open('labels.json', 'w') as f:
+            self.labels = json.load(f)
 
     def text_to_label_code(self, text):
         return self.labels[text]

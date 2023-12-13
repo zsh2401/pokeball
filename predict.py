@@ -41,7 +41,7 @@ if torch.cuda.device_count() > 1 and device == "cuda":
     print("Launch parallel testing")
     model = torch.nn.DataParallel(model)
 
-checkpoint = torch.load("./pokeball.pth")
+checkpoint = torch.load("pokeball.pth")
 model.load_state_dict(checkpoint["model_state_dict"])
 print(f"Loaded model, epochs: {checkpoint['epoch']}, accuracy {checkpoint['accuracy']}")
 model.to(device)
