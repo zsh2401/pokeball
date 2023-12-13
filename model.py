@@ -4,9 +4,9 @@ from torch.nn import functional as F
 
 
 def build_model(num_classes, for_train=True):
-    model = Pokeball(num_classes=num_classes)
-    # model = torchvision.models.resnet18(pretrained=for_train)
-    # model.fc = nn.Linear(model.fc.in_features, num_classes)
+    # model = Pokeball(num_classes=num_classes)
+    model = torchvision.models.resnet18(pretrained=for_train)
+    model.fc = nn.Linear(model.fc.in_features, num_classes)
     return model
 
 
