@@ -66,7 +66,7 @@ class PokemonDataset(Dataset):
         return DataLoader(self, batch_size=batch_size, shuffle=True)
 
     def __init_label_lib__(self, root_dir):
-        with open('labels.json', 'w') as f:
+        with open('labels.json', 'r') as f:
             self.labels = json.load(f)
 
     def text_to_label_code(self, text):
@@ -135,7 +135,7 @@ class PokemonDataset(Dataset):
 
 class PokemonTrainDataset(PokemonDataset):
     def __init__(self):
-        super().__init__(0, 0.8)
+        super().__init__(0, 0.6)
 
 
 class PokemonValidDataset(PokemonDataset):

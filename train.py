@@ -6,7 +6,7 @@ import torchvision.models
 from torch import nn, optim
 from torch.utils.data import DataLoader
 
-from dataset import PokemonTrainDataset, PokemonTestDataset
+from dataset import PokemonTrainDataset, PokemonTestDataset, PokemonValidDataset
 from model import Pokeball, build_model
 import matplotlib.pyplot as plt
 
@@ -26,10 +26,12 @@ torch.manual_seed(seed)
 torch.cuda.manual_seed(seed)
 
 train_dataset = PokemonTrainDataset()
+validation_dataset = PokemonValidDataset()
 test_dataset = PokemonTestDataset()
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
-# 步骤4: 定义模型
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+val_loader = DataLoader(validation_dataset, batch_size=64, shuffle=True)
+
 num_classes = train_dataset.classes
 
 model = build_model(num_classes)
@@ -70,16 +72,18 @@ if os.path.isfile("pokeball.pth"):
 
 while True:
     i = 0
-    for images, labels,_,_ in train_loader:
+
+    ## 训练 ##
+    for images, labels, _, _ in train_loader:
         images = images.to(device)
         labels = labels.to(device)
+
+        optimizer.zero_grad()
 
         outputs = model(images)
         loss = criterion(outputs, labels)
 
-        optimizer.zero_grad()
         loss.backward()
-        # optimizer.
         optimizer.step()
 
         b += 1
@@ -90,8 +94,30 @@ while True:
 
     epoch += 1
     scheduler.step()
-    print("Testing...")
-    accuracy = do_test(device, model.state_dict(), epochs=epoch, test_dataset=test_dataset)
+
+    print("Validating")
+
+    with torch.no_grad():
+        correct = 0
+        total = 0
+        for images, labels, image_paths, _ in val_loader:
+            images = images.to(device)
+            labels = labels.to(device)
+
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+
+            _, predicted = torch.max(outputs.data, 1)  # 获取每个样本的最大logit值索引作为预测结果
+
+            # print(predicted)
+            # for i, p in enumerate(predicted):
+            #     print(f"Model predict {image_paths[i]} is {test_dataset.label_code_to_text(p)}")
+
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+        accuracy = correct / total
+        print(f'***Validation Set Accuracy: {accuracy * 100:.2f}% ***')
 
     print("Saving state")
     torch.save({
