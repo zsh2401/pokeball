@@ -12,6 +12,8 @@ from predict import predict
 app = Flask("pokeball")
 
 CORS(app)
+
+
 @app.route('/', methods=['POST'])
 def pokemon_predict():
     try:
@@ -21,8 +23,7 @@ def pokemon_predict():
             image = Image.open(f.stream).convert("RGB")
             image_tensor = transform(image)
             X.append(image_tensor)
-        labels = predict(torch.stack(X))
-        return {"success": True, "data": labels}
+        return {"success": True, "data": predict(torch.stack(X))}
     except:
         e = sys.exc_info()[0]
         raise e
