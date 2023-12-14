@@ -50,11 +50,18 @@ model.eval()
 def predict(img_tensors):
     with torch.no_grad():
         y = model(img_tensors.to(device))
-        _, predicted = torch.max(y.data, 1)
-        labels = []
-        for p in predicted:
-            labels.append(train_dataset.label_code_to_text(p))
-        return labels
+        probabilities = torch.nn.functional.softmax(y, 1)
+        result = []
+        for image_pro in probabilities:
+            img_pros = []
+            for i, p in enumerate(image_pro):
+                img_pros.append((train_dataset.label_code_to_text(i), float(p)))
+            img_pros.sort(key=lambda v: v[1], reverse=True)
+            img_pros = img_pros[:3]
+            # print(img_pros)
+            result.append(img_pros)
+
+        return result
 
 
 if __name__ == "__main__":
@@ -66,6 +73,13 @@ if __name__ == "__main__":
         X.append(image_tensor)
 
     X = torch.stack(X, 0).to(device)
-    labels = predict(X)
-    for i, label in labels:
-        print(f"{paths[i]} is {label}")
+    tasks = predict(X)
+    for i, task in enumerate(tasks):
+        if task[0][1] > 0.9:
+            print(f"{paths[i]} is {task[0][0]} ( {task[0][1] * 100:.2f}% )")
+        else:
+            str = f"{paths[i]} maybe "
+            for prob in task:
+                str += f"{prob[0]} ({prob[1] * 100:.2f}%) "
+                # print(f"{paths[i]} is ")
+            print(str)
