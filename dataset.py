@@ -53,14 +53,23 @@ transform = transforms.Compose([
     transforms.ToTensor(),  # 将图片转换为Tensor
     transforms.Normalize(mean=[0.485, 0.456, 0.406],  # 图像标准化
                          std=[0.229, 0.224, 0.225])
-
-    # transforms.Normalize(mean=mean, std=std)  # 标准化
 ])
 
 print("Transform prepared")
 
 
 class PokemonDataset(Dataset):
+    def __init__(self, from_percent, to_percent):
+        # 将图片进行初步的处理，使其能被卷积网络接收
+        self.transform = transform
+
+        self.data = []
+        self.labels = {}
+        self.__init_label_lib__("dataset")
+        self.classes = len(self.labels)
+        self.__prepare_data__("dataset", from_percent, to_percent)
+
+        # print(f'数据集准备完毕，{len(self.data)}个样本，分布在{self.classes}个分类')
 
     def to_loader(self, batch_size=64):
         return DataLoader(self, batch_size=batch_size, shuffle=True)
@@ -96,18 +105,6 @@ class PokemonDataset(Dataset):
                         self.data.append((image_path, label))
                         num += 1
                 # print(f"从 {label} 中采用了 {num}/{len(files)} ({(num / len(files) * 100):.2f}%) 个数据")
-
-    def __init__(self, from_percent, to_percent):
-        # 将图片进行初步的处理，使其能被卷积网络接收
-        self.transform = transform
-
-        self.data = []
-        self.labels = {}
-        self.__init_label_lib__("dataset")
-        self.classes = len(self.labels)
-        self.__prepare_data__("dataset", from_percent, to_percent)
-
-        # print(f'数据集准备完毕，{len(self.data)}个样本，分布在{self.classes}个分类')
 
     def __len__(self):
         return len(self.data)

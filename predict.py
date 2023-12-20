@@ -1,4 +1,5 @@
 import sys
+import time
 
 import torch
 from PIL import Image
@@ -48,6 +49,8 @@ model.eval()
 
 
 def predict(img_tensors):
+    print(f"Classifying {size(img_tensors)} images.")
+    start = time.time()
     with torch.no_grad():
         y = model(img_tensors.to(device))
         probabilities = torch.nn.functional.softmax(y, 1)
@@ -60,7 +63,8 @@ def predict(img_tensors):
             img_pros = img_pros[:3]
             # print(img_pros)
             result.append(img_pros)
-
+        end = time.time()
+        print(f"Classified images, costs {end - start} ms")
         return result
 
 
