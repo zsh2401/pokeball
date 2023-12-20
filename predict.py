@@ -49,7 +49,7 @@ model.eval()
 
 
 def predict(img_tensors):
-    print(f"Classifying {size(img_tensors)} images.")
+    print(f"Classifying {len(img_tensors)} images.")
     start = time.time()
     with torch.no_grad():
         y = model(img_tensors.to(device))
